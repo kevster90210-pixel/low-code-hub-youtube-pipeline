@@ -10,7 +10,7 @@ import os
 import json
 import time
 import subprocess
-from pathlib import Path
+from pathlib import Pat
 import feedparser
 import httpx
 
@@ -93,7 +93,8 @@ async def generate_podcast(article_url: str, title: str) -> str:
                                 audio_overview = await client.artifacts.generate_audio(
                                                         nb.id,
                                                         instructions="Create an engaging, informative deep-dive podcast for tech professionals",
-                                                        wait=True
+                                                        wait=True,
+                                                        timeout=900
                                 )
                 print("[NotebookLM] Audio generation complete ✅")
 except Exception as rpc_err:
