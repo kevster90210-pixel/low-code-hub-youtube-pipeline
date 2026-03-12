@@ -8,11 +8,13 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Install Python deps
+# Install Python deps FIRST (including playwright)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-RUN playwright install chromium
-RUN playwright install-deps chromium
+
+# NOW install playwright browsers (after pip install)
+RUN python -m playwright install chromium
+RUN python -m playwright install-deps chromium
 
 # Copy app
 COPY pipeline.py .
