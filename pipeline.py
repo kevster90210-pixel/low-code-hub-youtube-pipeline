@@ -91,9 +91,7 @@ async def generate_podcast(article_url: str, title: str) -> str:
             try:
                 audio_overview = await client.artifacts.generate_audio(
                     nb.id,
-                    instructions="Create an engaging, informative deep-dive podcast for tech professionals",
-                    wait=True,
-                    timeout=900
+                    instructions="Create an engaging, informative deep-dive podcast for tech professionals"
                 )
                 print("[NotebookLM] Audio generation complete ✅")
             except Exception as rpc_err:
