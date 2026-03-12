@@ -21,6 +21,16 @@ RSS_URL = os.environ["RSS_URL"]
 VIZARD_API_KEY = os.environ["VIZARD_API_KEY"]
 VIZARD_SOCIAL_ID = os.environ.get("VIZARD_SOCIAL_ID", "dml6YXJkLTEtMTc2Mzlx")
 PROCESSED_FILE = "/data/processed.json"
+NOTEBOOKLM_SESSION_FILE = "/tmp/notebooklm_session.json"
+
+# Write session file from env var at startup
+def setup_notebooklm_session():
+    session_json = os.environ.get("NOTEBOOKLM_SESSION")
+    if not session_json:
+        raise Exception("NOTEBOOKLM_SESSION env var not set")
+    with open(NOTEBOOKLM_SESSION_FILE, "w") as f:
+        f.write(session_json)
+    print(f"[NotebookLM] Session file written to {NOTEBOOKLM_SESSION_FILE} 2705")
 
 # ─────────────────────────────────────────
 # STEP 1 — Get ONE new article from RSS
@@ -60,7 +70,7 @@ async def generate_podcast(article_url: str, title: str) -> str:
 
     from notebooklm import NotebookLMClient
 
-    async with await NotebookLMClient.from_storage() as client:
+    async with await NotebookLMClient.from_storage(NOTEBOOKLM_SESSION_FILE) as client:
         print("[NotebookLM] Creating notebook...")
         nb = await client.notebooks.create(title[:100])
 
@@ -192,6 +202,7 @@ def publish_via_vizard(video_path: str, title: str, description: str) -> str:
 # MAIN
 # ─────────────────────────────────────────
 async def main():
+    setup_notebooklm_session()
     print("\n🚀 Starting NotebookLM → YouTube Pipeline")
     print("=" * 50)
 
