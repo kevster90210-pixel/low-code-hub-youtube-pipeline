@@ -89,10 +89,13 @@ async def generate_podcast(article_url: str, title: str) -> str:
             print("[NotebookLM] Source added ✅")
             print("[NotebookLM] Generating audio overview (takes 5-10 mins)...")
             try:
-                audio_overview = await client.artifacts.generate_audio(
+                print("[NotebookLM] Submitting audio generation request...")
+                status = await client.artifacts.generate_audio(
                     nb.id,
                     instructions="Create an engaging, informative deep-dive podcast for tech professionals"
                 )
+                print(f"[NotebookLM] Audio task started (task_id={status.task_id}), waiting for completion...")
+                await client.artifacts.wait_for_completion(nb.id, status.task_id)
                 print("[NotebookLM] Audio generation complete ✅")
             except Exception as rpc_err:
                 err_str = str(rpc_err)
