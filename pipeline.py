@@ -21,13 +21,14 @@ RSS_URL = os.environ["RSS_URL"]
 VIZARD_API_KEY = os.environ["VIZARD_API_KEY"]
 VIZARD_SOCIAL_ID = os.environ.get("VIZARD_SOCIAL_ID", "dml6YXJkLTEtMTc2Mzlx")
 PROCESSED_FILE = "/data/processed.json"
-NOTEBOOKLM_SESSION_FILE = "/tmp/notebooklm_session.json"
+NOTEBOOKLM_SESSION_FILE = "/root/.notebooklm/storage_state.json"
 
 # Write session file from env var at startup
 def setup_notebooklm_session():
     session_json = os.environ.get("NOTEBOOKLM_SESSION")
     if not session_json:
         raise Exception("NOTEBOOKLM_SESSION env var not set")
+    os.makedirs("/root/.notebooklm", exist_ok=True)
     with open(NOTEBOOKLM_SESSION_FILE, "w") as f:
         f.write(session_json)
     print(f"[NotebookLM] Session file written to {NOTEBOOKLM_SESSION_FILE} 2705")
@@ -70,7 +71,7 @@ async def generate_podcast(article_url: str, title: str) -> str:
 
     from notebooklm import NotebookLMClient
 
-    async with await NotebookLMClient.from_storage(NOTEBOOKLM_SESSION_FILE) as client:
+    async with await NotebookLMClient.from_storage() as client:
         print("[NotebookLM] Creating notebook...")
         nb = await client.notebooks.create(title[:100])
 
